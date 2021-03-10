@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+MimeType=application/vnd.android.package-archive;
+Name=Install APK
+Exec=/usr/bin/install-apk %F
+Terminal=false

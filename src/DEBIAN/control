@@ -1,0 +1,7 @@
+Package: install-apk
+Maintainer: MATSUDA Takashi
+Version: 0.1.0
+Architecture: all
+Depends: adb, python3-tk
+Description: Install android APK from crostini Linux.
+

@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+import os.path
+import tkinter as tk
+
+apk = '/mnt/sdcard/Android/data/com.aide.ui/cache/apk/app.apk'
+if len(sys.argv) >= 2:
+    apk = sys.argv[1]
+
+def pull_apk(fromPath, toPath):
+    p = subprocess.Popen(
+        ['adb', 'pull', fromPath, toPath],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.STDOUT)
+    while p.poll() is None:
+        text.insert(tk.END, p.stdout.readline().decode())
+        root.update()
+
+def install_apk(apk):
+    tmpApk = '/tmp/app.apk'
+    if not os.path.isfile(apk):
+        text.insert(tk.END, f"Now pulling ...\n")
+        pull_apk(apk, tmpApk)
+        apk = tmpApk
+        text.insert(tk.END, f"Done\n")
+    text.insert(tk.END, f"Now installing ...\n")
+    btnExit['state'] = tk.DISABLED
+    btnInstall['state'] = tk.DISABLED
+    root.update()
+    p = subprocess.Popen(
+        ['adb', 'install', apk],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.STDOUT)
+    while p.poll() is None:
+        text.insert(tk.END, p.stdout.readline().decode())
+        root.update()
+    btnExit['state'] = tk.NORMAL
+
+def onClickInstall():
+    install_apk(apk)
+
+root = tk.Tk()
+root.title('Install APK')
+
+frame = tk.Frame(root)
+frame.pack(side = tk.BOTTOM)
+
+text = tk.Text(root)
+text.insert(tk.END, f"Press 'Install' Button to install {apk}.\n")
+text.pack(expand = 1, fill = tk.BOTH)
+
+btnInstall = tk.Button(
+    frame,
+    text = 'Install',
+    command = onClickInstall)
+btnInstall.pack(side=tk.LEFT)
+
+btnExit = tk.Button(
+    frame,
+    text = 'Exit',
+    command = sys.exit)
+btnExit.pack(side=tk.LEFT)
+
+root.mainloop()
